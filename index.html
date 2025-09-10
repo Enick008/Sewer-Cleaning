@@ -5,9 +5,12 @@
     <title>ระบบรายงานผลการดูดฉีดล้างท่อระบายน้ำ</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- CSS & JS Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-red: #D82E2F;
@@ -36,6 +39,9 @@
             display: flex;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         nav button {
             flex: 1;
@@ -88,6 +94,7 @@
             box-sizing: border-box;
             margin-bottom: 15px;
             font-size: 1em;
+            -webkit-appearance: none;
         }
         button, input[type="button"] {
             width: 100%;
@@ -99,22 +106,28 @@
             color: #fff;
             background-color: var(--primary-red);
             cursor: pointer;
+            -webkit-appearance: none;
         }
         #map {
             height: 300px;
             border-radius: 12px;
             margin-bottom: 15px;
         }
+        .table-container {
+            overflow-x: auto;
+        }
         #resultsTable {
             width: 100%; border-collapse: collapse; margin-top: 15px;
         }
         #resultsTable th, #resultsTable td {
-            border: 1px solid var(--border-color); padding: 10px; text-align: left;
+            border: 1px solid var(--border-color); padding: 10px; text-align: left; white-space: nowrap;
         }
         .date-range {
-            display: flex; gap: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .date-range > div { flex: 1; }
+        .date-range > div { flex: 1; min-width: 150px; }
         footer {
             text-align: center;
             padding: 20px;
@@ -135,6 +148,7 @@
     </nav>
 
     <main>
+        <!-- Page 1: Data Entry & Management -->
         <div id="entryPage" class="page active">
             <div class="card">
                 <h2>📝 บันทึกการปฏิบัติงาน</h2>
@@ -144,7 +158,7 @@
                     <input type="date" id="workDate" required>
                     
                     <label for="latitude">ละติจูด</label>
-                    <input type="text" id="latitude" readonly required>
+                    <input type="text" id="latitude" readonly required placeholder="กรุณาเลือกตำแหน่งบนแผนที่">
                     
                     <label for="longitude">ลองจิจูด</label>
                     <input type="text" id="longitude" readonly required>
@@ -164,14 +178,13 @@
                     
                     <input type="button" value="บันทึกข้อมูล" onclick="submitForm()">
                 </form>
-                <p id="status"></p>
             </div>
             <div class="card">
                 <h2>🔍 ค้นหาและลบข้อมูล</h2>
                 <input type="text" id="searchText" placeholder="ค้นหาจาก ID, รายละเอียด, ...">
                 <button onclick="handleSearch()">ค้นหา</button>
-                <p id="searchStatus"></p>
-                <div style="overflow-x:auto;">
+                <p id="searchStatus" style="text-align:center; font-weight:bold;"></p>
+                <div class="table-container">
                     <table id="resultsTable" style="display:none;">
                         <thead><tr><th>ID</th><th>วันที่</th><th>รายการ</th><th>รูปภาพ</th><th>จัดการ</th></tr></thead>
                         <tbody id="resultsBody"></tbody>
@@ -180,6 +193,7 @@
             </div>
         </div>
 
+        <!-- Page 2: Statistics -->
         <div id="statsPage" class="page">
             <div class="card">
                 <h2>📊 สถิติการปฏิบัติงาน</h2>
@@ -194,7 +208,6 @@
                     </div>
                 </div>
                 <button onclick="loadStatistics()">แสดงสถิติ</button>
-                <p id="statsStatus"></p>
                 <div id="chart-container" style="margin-top:20px;">
                     <canvas id="statsChart"></canvas>
                 </div>
@@ -215,9 +228,12 @@
             navButtons.forEach(b => b.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.getElementById(`nav-${pageId.replace('Page', '')}`).classList.add('active');
+            if (pageId === 'entryPage') {
+                setTimeout(() => { map.invalidateSize() }, 100);
+            }
         }
 
-        /* --- Leaflet Map --- */
+        /* --- Leaflet Map Initialization --- */
         const map = L.map('map').setView([13.7563, 100.5018], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
         let marker;
@@ -228,57 +244,163 @@
             marker = L.marker([lat, lng]).addTo(map);
         });
 
-        /* --- All previous JS functions for save, search, delete --- */
-        // (Omitted for brevity, but they should be here)
-        function submitForm() { /* ... your existing function ... */ }
-        function onSuccess() { /* ... your existing function ... */ }
-        function onFailure() { /* ... your existing function ... */ }
-        function handleSearch() { /* ... your existing function ... */ }
-        function displayResults() { /* ... your existing function ... */ }
-        function confirmDelete() { /* ... your existing function ... */ }
+        /* --- Save Data Functions --- */
+        function submitForm() {
+            const formData = {
+                workDate: document.getElementById('workDate').value,
+                latitude: document.getElementById('latitude').value,
+                longitude: document.getElementById('longitude').value,
+                details: document.getElementById('details').value,
+                notes: document.getElementById('notes').value
+            };
+            const file = document.getElementById('image').files[0];
+            if (!formData.workDate || !formData.latitude) {
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอกข้อมูลวันที่และระบุพิกัดบนแผนที่' });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'กำลังบันทึกข้อมูล...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
 
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    formData.imageData = e.target.result;
+                    formData.fileName = file.name;
+                    formData.mimeType = file.type;
+                    google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).saveData(formData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).saveData(formData);
+            }
+        }
+        function onSuccess(response) {
+            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: response });
+            document.getElementById('reportForm').reset();
+            document.getElementById('image').value = "";
+            if (marker) map.removeLayer(marker);
+        }
+        function onFailure(error) {
+            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด!', text: error.message });
+        }
 
-        /* --- UPDATED Statistics Function --- */
+        /* --- Search and Delete Functions --- */
+        function handleSearch() {
+            const searchText = document.getElementById('searchText').value;
+            if (!searchText) {
+                Swal.fire({ icon: 'warning', title: 'โปรดระบุ', text: 'กรุณาป้อนคำที่ต้องการค้นหา' });
+                return;
+            }
+            document.getElementById('searchStatus').innerText = 'กำลังค้นหา...';
+            google.script.run.withSuccessHandler(displayResults).searchData(searchText);
+        }
+        function displayResults(results) {
+            const table = document.getElementById('resultsTable'), tbody = document.getElementById('resultsBody'), status = document.getElementById('searchStatus');
+            tbody.innerHTML = ''; 
+            if (results && results.length > 0) {
+                status.innerText = `พบข้อมูล ${results.length} รายการ`;
+                results.forEach(row => {
+                    const tr = tbody.insertRow();
+                    tr.innerHTML = `
+                        <td>${row[0]}</td> <td>${row[2]}</td> <td>${row[5]}</td>
+                        <td>${row[7] ? `<a href="${row[7]}" target="_blank">ดูรูป</a>` : 'ไม่มี'}</td>
+                        <td><button style="background-color:#D82E2F; padding:5px 10px;" onclick="confirmDelete('${row[0]}')">ลบ</button></td>
+                    `;
+                });
+                table.style.display = 'table';
+            } else {
+                status.innerText = 'ไม่พบข้อมูลที่ตรงกัน';
+                table.style.display = 'none';
+            }
+        }
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'ยืนยันการลบ',
+                text: `คุณต้องการลบข้อมูล ID: ${id} ใช่หรือไม่?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#D82E2F',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ใช่, ลบเลย!',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('searchStatus').innerText = `กำลังลบ ID: ${id}...`;
+                    google.script.run.withSuccessHandler(response => {
+                        Swal.fire('ลบสำเร็จ!', response, 'success');
+                        handleSearch(); // Refresh search results
+                    }).deleteData(id);
+                }
+            });
+        }
+
+        /* --- Statistics Functions --- */
         let statsChart;
         function loadStatistics() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             if (!startDate || !endDate) {
-                alert('กรุณาเลือกช่วงวันที่เริ่มต้นและสิ้นสุด');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณาเลือกช่วงวันที่เริ่มต้นและสิ้นสุด' });
                 return;
             }
-            document.getElementById('statsStatus').innerText = 'กำลังโหลดข้อมูลสถิติ...';
+            Swal.fire({
+                title: 'กำลังโหลดข้อมูลสถิติ',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
             google.script.run.withSuccessHandler(processStats).getStatsDataByDateRange(startDate, endDate);
         }
-
         function processStats(data) {
-            // (The rest of the processStats function is the same as the previous version)
-            const status = document.getElementById('statsStatus');
-            if (!data || data.length <= 1) {
-                status.innerText = 'ไม่พบข้อมูลในช่วงเวลาที่เลือก';
-                if(statsChart) statsChart.destroy();
+            Swal.close();
+            const chartContainer = document.getElementById('chart-container');
+            if (statsChart) statsChart.destroy();
+            if (!data || data.length <= 1) { 
+                Swal.fire({ icon: 'info', title: 'ไม่พบข้อมูล', text: 'ไม่พบข้อมูลในช่วงเวลาที่เลือก' });
+                chartContainer.style.display = 'none';
                 return;
             }
             const headers = data.shift(), records = data;
             const detailsIndex = headers.indexOf('details'), jobCounts = {};
-            records.forEach(row => { const jobType = row[detailsIndex] || 'ไม่ระบุ'; jobCounts[jobType] = (jobCounts[jobType] || 0) + 1; });
+            records.forEach(row => {
+                const jobType = row[detailsIndex] || 'ไม่ระบุ';
+                jobCounts[jobType] = (jobCounts[jobType] || 0) + 1;
+            });
             const ctx = document.getElementById('statsChart').getContext('2d');
-            if (statsChart) statsChart.destroy();
             statsChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels: Object.keys(jobCounts), datasets: [{ data: Object.values(jobCounts), backgroundColor: ['#D82E2F', '#F4A261', '#2A9D8F', '#E9C46A', '#264653'] }] },
-                options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: `สัดส่วนการปฏิบัติงาน (${records.length} รายการ)` } } }
+                data: {
+                    labels: Object.keys(jobCounts),
+                    datasets: [{
+                        data: Object.values(jobCounts),
+                        backgroundColor: ['#D82E2F', '#F4A261', '#2A9D8F', '#E9C46A', '#264653'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: `สัดส่วนการปฏิบัติงาน (${records.length} รายการ)` }
+                    }
+                }
             });
-            status.innerText = '';
+            chartContainer.style.display = 'block';
         }
 
-        // Initialize with default date range for today
+        /* --- Page Initialization --- */
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('startDate').value = today;
             document.getElementById('endDate').value = today;
+            setTimeout(() => { map.invalidateSize() }, 100);
         });
-
     </script>
 </body>
 </html>
+
