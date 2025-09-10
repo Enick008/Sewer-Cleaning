@@ -19,121 +19,27 @@
             --text-color: #333;
             --text-light: #666;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            background-color: var(--light-gray);
-            color: var(--text-color);
-        }
-        header {
-            background-color: #fff;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-        header img {
-            height: 100px;
-            width: auto;
-        }
-        nav {
-            display: flex;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        nav button {
-            flex: 1;
-            padding: 15px;
-            font-size: 1em;
-            font-weight: bold;
-            border: none;
-            background-color: transparent;
-            color: var(--text-light);
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            transition: color 0.2s, border-bottom 0.2s;
-        }
-        nav button.active {
-            color: var(--primary-red);
-            border-bottom: 3px solid var(--primary-red);
-        }
-        main {
-            padding: 20px;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        .card {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        h2 {
-            margin-top: 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            font-size: 1em;
-            -webkit-appearance: none;
-        }
-        button, input[type="button"] {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: none;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #fff;
-            background-color: var(--primary-red);
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-        #map {
-            height: 300px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        #resultsTable {
-            width: 100%; border-collapse: collapse; margin-top: 15px;
-        }
-        #resultsTable th, #resultsTable td {
-            border: 1px solid var(--border-color); padding: 10px; text-align: left; white-space: nowrap;
-        }
-        .date-range {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background-color: var(--light-gray); color: var(--text-color); }
+        header { background-color: #fff; padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        header img { height: 100px; width: auto; }
+        nav { display: flex; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        nav button { flex: 1; padding: 15px; font-size: 1em; font-weight: bold; border: none; background-color: transparent; color: var(--text-light); border-bottom: 3px solid transparent; cursor: pointer; transition: color 0.2s, border-bottom 0.2s; }
+        nav button.active { color: var(--primary-red); border-bottom: 3px solid var(--primary-red); }
+        main { padding: 20px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .card { background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h2 { margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-light); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; margin-bottom: 15px; font-size: 1em; -webkit-appearance: none; }
+        button, input[type="button"] { width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 1.1em; font-weight: bold; color: #fff; background-color: var(--primary-red); cursor: pointer; -webkit-appearance: none; }
+        #map { height: 300px; border-radius: 12px; margin-bottom: 15px; }
+        .table-container { overflow-x: auto; }
+        #resultsTable { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        #resultsTable th, #resultsTable td { border: 1px solid var(--border-color); padding: 10px; text-align: left; white-space: nowrap; }
+        .date-range { display: flex; flex-wrap: wrap; gap: 15px; }
         .date-range > div { flex: 1; min-width: 150px; }
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9em;
-            color: var(--text-light);
-        }
+        footer { text-align: center; padding: 20px; font-size: 0.9em; color: var(--text-light); }
     </style>
 </head>
 <body>
@@ -220,6 +126,9 @@
     </footer>
 
     <script>
+        // ========= ตั้งค่า API =========
+        const API_BASE = 'https://script.google.com/macros/s/AKfycby1BpzGqYVFbqXcwlIqgGHc8ke3s9n3ELaFf6pPxP_EptYgNxenOUi2SVmyxPIEJUbcIA/exec';
+
         /* --- Page Navigation --- */
         const pages = document.querySelectorAll('.page');
         const navButtons = document.querySelectorAll('nav button');
@@ -228,9 +137,7 @@
             navButtons.forEach(b => b.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.getElementById(`nav-${pageId.replace('Page', '')}`).classList.add('active');
-            if (pageId === 'entryPage') {
-                setTimeout(() => { map.invalidateSize() }, 100);
-            }
+            if (pageId === 'entryPage') setTimeout(() => { map.invalidateSize() }, 100);
         }
 
         /* --- Leaflet Map Initialization --- */
@@ -244,8 +151,18 @@
             marker = L.marker([lat, lng]).addTo(map);
         });
 
-        /* --- Save Data Functions --- */
-        function submitForm() {
+        /* --- Helpers --- */
+        function fileToBase64(file){
+          return new Promise((resolve,reject)=>{
+            const r = new FileReader();
+            r.onload = ()=> resolve(r.result);
+            r.onerror = reject;
+            r.readAsDataURL(file);
+          });
+        }
+
+        /* --- Save Data (REST) --- */
+        async function submitForm() {
             const formData = {
                 workDate: document.getElementById('workDate').value,
                 latitude: document.getElementById('latitude').value,
@@ -254,60 +171,76 @@
                 notes: document.getElementById('notes').value
             };
             const file = document.getElementById('image').files[0];
+
             if (!formData.workDate || !formData.latitude) {
                 Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอกข้อมูลวันที่และระบุพิกัดบนแผนที่' });
                 return;
             }
-            
-            Swal.fire({
-                title: 'กำลังบันทึกข้อมูล...',
-                text: 'กรุณารอสักครู่',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading() }
-            });
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    formData.imageData = e.target.result;
-                    formData.fileName = file.name;
+            try {
+                Swal.fire({ title: 'กำลังบันทึกข้อมูล...', text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                if (file) {
+                    const b64 = await fileToBase64(file);
+                    formData.imageData = b64;
+                    formData.fileName = file.name.replace(/\.[^.]+$/, '');
                     formData.mimeType = file.type;
-                    google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).saveData(formData);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).saveData(formData);
+                }
+
+                const res = await fetch(API_BASE + '?action=save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                }).then(r => r.json());
+
+                if (res.status === 'ok') {
+                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: `ID: ${res.id}` });
+                    document.getElementById('reportForm').reset();
+                    document.getElementById('image').value = "";
+                    if (marker) map.removeLayer(marker);
+                } else {
+                    Swal.fire({ icon: 'error', title: 'บันทึกล้มเหลว', text: res.message || 'ไม่ทราบสาเหตุ' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด!', text: err.message || err });
             }
         }
-        function onSuccess(response) {
-            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', text: response });
-            document.getElementById('reportForm').reset();
-            document.getElementById('image').value = "";
-            if (marker) map.removeLayer(marker);
-        }
-        function onFailure(error) {
-            Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด!', text: error.message });
-        }
 
-        /* --- Search and Delete Functions --- */
-        function handleSearch() {
+        /* --- Search (REST) --- */
+        async function handleSearch() {
             const searchText = document.getElementById('searchText').value;
             if (!searchText) {
                 Swal.fire({ icon: 'warning', title: 'โปรดระบุ', text: 'กรุณาป้อนคำที่ต้องการค้นหา' });
                 return;
             }
             document.getElementById('searchStatus').innerText = 'กำลังค้นหา...';
-            google.script.run.withSuccessHandler(displayResults).searchData(searchText);
+
+            try {
+                const url = new URL(API_BASE);
+                url.searchParams.set('action', 'search');
+                url.searchParams.set('q', searchText);
+                url.searchParams.set('limit', '200');
+
+                const res = await fetch(url.toString()).then(r => r.json());
+                // res: {headers, rows}
+                displayResults(res.rows || []);
+            } catch (err) {
+                document.getElementById('searchStatus').innerText = 'เกิดข้อผิดพลาดในการค้นหา';
+            }
         }
-        function displayResults(results) {
-            const table = document.getElementById('resultsTable'), tbody = document.getElementById('resultsBody'), status = document.getElementById('searchStatus');
+
+        function displayResults(rows) {
+            const table = document.getElementById('resultsTable'),
+                  tbody = document.getElementById('resultsBody'),
+                  status = document.getElementById('searchStatus');
             tbody.innerHTML = ''; 
-            if (results && results.length > 0) {
-                status.innerText = `พบข้อมูล ${results.length} รายการ`;
-                results.forEach(row => {
+            if (rows && rows.length > 0) {
+                status.innerText = `พบข้อมูล ${rows.length} รายการ`;
+                rows.forEach(row => {
                     const tr = tbody.insertRow();
                     tr.innerHTML = `
-                        <td>${row[0]}</td> <td>${row[2]}</td> <td>${row[5]}</td>
+                        <td>${row[0]}</td>
+                        <td>${row[2] || '-'}</td>
+                        <td>${row[5] || '-'}</td>
                         <td>${row[7] ? `<a href="${row[7]}" target="_blank">ดูรูป</a>` : 'ไม่มี'}</td>
                         <td><button style="background-color:#D82E2F; padding:5px 10px;" onclick="confirmDelete('${row[0]}')">ลบ</button></td>
                     `;
@@ -318,8 +251,10 @@
                 table.style.display = 'none';
             }
         }
-        function confirmDelete(id) {
-            Swal.fire({
+
+        /* --- Delete (REST) --- */
+        async function confirmDelete(id) {
+            const ok = await Swal.fire({
                 title: 'ยืนยันการลบ',
                 text: `คุณต้องการลบข้อมูล ID: ${id} ใช่หรือไม่?`,
                 icon: 'warning',
@@ -328,69 +263,90 @@
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'ใช่, ลบเลย!',
                 cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('searchStatus').innerText = `กำลังลบ ID: ${id}...`;
-                    google.script.run.withSuccessHandler(response => {
-                        Swal.fire('ลบสำเร็จ!', response, 'success');
-                        handleSearch(); // Refresh search results
-                    }).deleteData(id);
-                }
             });
+            if (!ok.isConfirmed) return;
+
+            document.getElementById('searchStatus').innerText = `กำลังลบ ID: ${id}...`;
+            try {
+                const res = await fetch(API_BASE + '?action=delete', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id })
+                }).then(r => r.json());
+
+                if (res.status === 'ok') {
+                    Swal.fire('ลบสำเร็จ!', `ID: ${id}`, 'success');
+                    handleSearch(); // refresh
+                } else {
+                    Swal.fire('ล้มเหลว', res.message || 'ไม่ทราบสาเหตุ', 'error');
+                }
+            } catch (err) {
+                Swal.fire('ข้อผิดพลาด', err.message || err, 'error');
+            }
         }
 
-        /* --- Statistics Functions --- */
+        /* --- Statistics (REST) --- */
         let statsChart;
-        function loadStatistics() {
+        async function loadStatistics() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             if (!startDate || !endDate) {
                 Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณาเลือกช่วงวันที่เริ่มต้นและสิ้นสุด' });
                 return;
             }
-            Swal.fire({
-                title: 'กำลังโหลดข้อมูลสถิติ',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading() }
-            });
-            google.script.run.withSuccessHandler(processStats).getStatsDataByDateRange(startDate, endDate);
-        }
-        function processStats(data) {
-            Swal.close();
-            const chartContainer = document.getElementById('chart-container');
-            if (statsChart) statsChart.destroy();
-            if (!data || data.length <= 1) { 
-                Swal.fire({ icon: 'info', title: 'ไม่พบข้อมูล', text: 'ไม่พบข้อมูลในช่วงเวลาที่เลือก' });
-                chartContainer.style.display = 'none';
-                return;
-            }
-            const headers = data.shift(), records = data;
-            const detailsIndex = headers.indexOf('details'), jobCounts = {};
-            records.forEach(row => {
-                const jobType = row[detailsIndex] || 'ไม่ระบุ';
-                jobCounts[jobType] = (jobCounts[jobType] || 0) + 1;
-            });
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            statsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(jobCounts),
-                    datasets: [{
-                        data: Object.values(jobCounts),
-                        backgroundColor: ['#D82E2F', '#F4A261', '#2A9D8F', '#E9C46A', '#264653'],
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: `สัดส่วนการปฏิบัติงาน (${records.length} รายการ)` }
-                    }
+            Swal.fire({ title: 'กำลังโหลดข้อมูลสถิติ', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+            try {
+                const url = new URL(API_BASE);
+                url.searchParams.set('action','stats');
+                url.searchParams.set('startDate', startDate);
+                url.searchParams.set('endDate', endDate);
+
+                const res = await fetch(url.toString()).then(r => r.json());
+                Swal.close();
+
+                // res: { headers, rows, summary }
+                if (!res || !res.rows || res.rows.length === 0) {
+                    Swal.fire({ icon: 'info', title: 'ไม่พบข้อมูล', text: 'ไม่พบข้อมูลในช่วงเวลาที่เลือก' });
+                    document.getElementById('chart-container').style.display = 'none';
+                    return;
                 }
-            });
-            chartContainer.style.display = 'block';
+
+                const headers = res.headers || [];
+                const rows = res.rows || [];
+                const detailsIndex = headers.indexOf('details');
+                const jobCounts = {};
+                rows.forEach(row => {
+                    const jobType = (detailsIndex >= 0 ? row[detailsIndex] : row[5]) || 'ไม่ระบุ';
+                    jobCounts[jobType] = (jobCounts[jobType] || 0) + 1;
+                });
+
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if (statsChart) statsChart.destroy();
+                statsChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(jobCounts),
+                        datasets: [{
+                            data: Object.values(jobCounts),
+                            backgroundColor: ['#D82E2F', '#F4A261', '#2A9D8F', '#E9C46A', '#264653'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            title: { display: true, text: `สัดส่วนการปฏิบัติงาน (${rows.length} รายการ)` }
+                        }
+                    }
+                });
+                document.getElementById('chart-container').style.display = 'block';
+            } catch (err) {
+                Swal.close();
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message || err });
+            }
         }
 
         /* --- Page Initialization --- */
@@ -403,4 +359,3 @@
     </script>
 </body>
 </html>
-
